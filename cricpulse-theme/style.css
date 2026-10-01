@@ -1,0 +1,228 @@
+/*
+Theme Name: CricPulse Cricket Theme & Blog
+Theme URI: https://ais-pre-2o57fbonje7loyq5igc76m-277269373849.asia-east1.run.app
+Author: CricPulse Team
+Author URI: https://ais-pre-2o57fbonje7loyq5igc76m-277269373849.asia-east1.run.app
+Description: A complete, modern Cricket WordPress theme supporting real-time live scores, blog articles, custom pages, news categories, and match centers in Tamil and English.
+Version: 1.1.0
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: cricpulse-theme
+Tags: sports, cricket, blog, news, live-scores, dark-mode, responsive-layout, post-formats
+*/
+
+:root {
+    --bg-dark: #070b14;
+    --bg-card: #0f172a;
+    --border-color: #1e293b;
+    --primary-color: #10b981;
+    --accent-color: #06b6d4;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Plus Jakarta Sans", sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    line-height: 1.6;
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+a:hover {
+    color: #34d399;
+}
+
+.cricpulse-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+/* Header */
+.site-header {
+    background-color: #020617;
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.site-header .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 70px;
+}
+
+.site-branding {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.site-title a {
+    font-size: 20px;
+    font-weight: 800;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: -0.5px;
+}
+
+.main-navigation ul {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 20px;
+}
+
+.main-navigation a {
+    color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.main-navigation a:hover {
+    color: #ffffff;
+}
+
+/* Cricket Live Ticker Bar */
+.cricket-live-ticker-wrap {
+    background: #090d1a;
+    border-bottom: 1px solid var(--border-color);
+    padding: 12px 0;
+}
+
+/* Post and Article Cards */
+.article-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+    margin: 32px 0;
+}
+
+.article-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.article-card:hover {
+    transform: translateY(-4px);
+    border-color: #334155;
+}
+
+.article-thumbnail {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+    background-color: #1e293b;
+}
+
+.article-content {
+    padding: 20px;
+}
+
+.article-category {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--primary-color);
+    letter-spacing: 0.5px;
+}
+
+.article-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 8px 0;
+    line-height: 1.4;
+}
+
+.article-title a {
+    color: #ffffff;
+}
+
+.article-excerpt {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+}
+
+.article-meta {
+    font-size: 12px;
+    color: #64748b;
+    border-top: 1px solid var(--border-color);
+    padding-top: 12px;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Single Article & Page Layout */
+.single-post-container {
+    max-width: 860px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.single-post-title {
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1.25;
+    margin-bottom: 16px;
+    color: #ffffff;
+}
+
+.single-post-meta {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.single-post-featured-image {
+    width: 100%;
+    border-radius: 16px;
+    margin-bottom: 30px;
+}
+
+.entry-content {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #e2e8f0;
+}
+
+.entry-content h2, .entry-content h3 {
+    color: #ffffff;
+    margin-top: 32px;
+}
+
+.entry-content p {
+    margin-bottom: 20px;
+}
+
+/* Footer */
+.site-footer {
+    background-color: #020617;
+    border-top: 1px solid var(--border-color);
+    padding: 40px 0 24px;
+    margin-top: 60px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+}
