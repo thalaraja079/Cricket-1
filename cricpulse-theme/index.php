@@ -7,7 +7,16 @@
 get_header();
 ?>
 
-<!-- Section 1: Live Cricket Matches (Native Scoreboard - Zero iframe dependency!) -->
+<?php
+$display_mode = get_option('cricpulse_display_mode', 'full_app');
+$google_key = get_option('cricpulse_google_api_key', '');
+$app_url = get_option('cricpulse_app_url', 'https://ais-pre-l7rpu6rp447fkbekgmjxfs-966236010412.asia-southeast1.run.app');
+if (!empty($google_key)) {
+    $app_url = add_query_arg('apiKey', $google_key, $app_url);
+}
+?>
+
+<!-- Section 1: Live Cricket Matches -->
 <section class="cricket-live-ticker-wrap">
     <div class="cricpulse-container">
         <div id="cp-live-root"></div>

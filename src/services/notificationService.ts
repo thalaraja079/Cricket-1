@@ -84,12 +84,12 @@ class NotificationService {
       ? `🏆 போட்டி முடிவுற்றது! (${match.team1.shortName} vs ${match.team2.shortName})`
       : `🏆 MATCH FINALIZED! (${match.team1.shortName} vs ${match.team2.shortName})`;
 
-    const body = lang === 'ta' ? match.statusTextTa : match.statusText;
+    const body = (lang === 'ta' ? match.statusTextTa : match.statusText) || 'Match completed';
 
     this.sendNotification(title, body, 'result-alert');
 
     if (typeof document !== 'undefined' && document.hidden) {
-      this.flashTitle(`🏆 RESULT: ${match.statusText}`);
+      this.flashTitle(`🏆 RESULT: ${match.statusText || 'Match completed'}`);
     }
   }
 

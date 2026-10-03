@@ -1,7 +1,8 @@
 <?php
 /**
- * Template Name: Cricket Live Scores Full-Width
- * Description: A full-width page template for live cricket scores, upcoming fixtures, and dynamic WordPress articles.
+ * CricPulse Dedicated Front Page Template
+ * - Displays the Cricket Live Scoreboard & Spotlight exactly as styled.
+ * - Displays Published WordPress Articles below if the user has written any posts!
  */
 
 get_header();
@@ -25,7 +26,7 @@ $app_url = get_option('cricpulse_app_url', 'https://ais-pre-2o57fbonje7loyq5igc7
     </div>
 </section>
 
-<!-- Section 2: WordPress Articles & News Posts (Appears dynamically below live scores when user writes articles) -->
+<!-- Section 2: WordPress Articles & News Posts (Appears dynamically when user publishes posts) -->
 <?php
 $articles_query = new WP_Query(array(
     'posts_per_page'      => 6,

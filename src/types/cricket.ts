@@ -1,35 +1,20 @@
-export type Language = 'ta' | 'en';
+export type Language = 'en' | 'ta';
 
-export type MatchStatus = 'LIVE' | 'UPCOMING' | 'COMPLETED';
-export type MatchFormat = 'T20' | 'ODI' | 'TEST';
-export type TournamentType = 'IPL 2026' | 'ICC T20 World Cup' | 'Champions Trophy' | 'Bilateral Series';
-
-export interface BallEvent {
-  id: string;
-  over: number;
-  ball: number;
-  runs: number;
-  isFour?: boolean;
-  isSix?: boolean;
-  isWicket?: boolean;
-  wicketType?: 'bowled' | 'caught' | 'lbw' | 'run out' | 'stumped';
-  dismissedPlayer?: string;
-  isExtra?: boolean;
-  extraType?: 'wide' | 'no-ball' | 'bye' | 'leg-bye';
-  batsmanName: string;
-  bowlerName: string;
-  commentaryEn: string;
-  commentaryTa: string;
-  speedKmph?: number;
-  shotZone?: 'cover' | 'mid-wicket' | 'straight' | 'point' | 'fine-leg' | 'third-man' | 'long-on' | 'long-off';
-  timestamp: string;
-}
-
-export interface BatsmanStats {
+export interface Team {
   id: string;
   name: string;
-  nameTa: string;
-  role: 'Batter' | 'Wicketkeeper' | 'All-rounder' | 'Bowler';
+  nameTa?: string;
+  shortName: string;
+  color?: string;
+  secondaryColor?: string;
+  logo: string;
+}
+
+export interface Batsman {
+  id: string;
+  name: string;
+  nameTa?: string;
+  role: string;
   runs: number;
   balls: number;
   fours: number;
@@ -41,147 +26,123 @@ export interface BatsmanStats {
   dismissalInfoTa?: string;
 }
 
-export interface BowlerStats {
+export interface Bowler {
   id: string;
   name: string;
-  nameTa: string;
-  role: 'Fast Bowler' | 'Spin Bowler' | 'Medium Pacer';
+  nameTa?: string;
+  role: string;
   overs: number;
   ballsCurrentOver: number;
   maidens: number;
   runs: number;
   wickets: number;
   economy: number;
-  isCurrentBowler: boolean;
+  isCurrentBowler?: boolean;
 }
 
-export interface TeamInfo {
-  id: string;
-  name: string;
-  nameTa: string;
-  shortName: string;
-  color: string;
-  secondaryColor: string;
-  logo: string;
+export interface FallOfWicket {
+  wicketNo: number;
+  score: number;
+  batsmanName: string;
+  over: number;
 }
 
-export interface InningsData {
+export interface Innings {
   teamId: string;
   teamName: string;
   teamShort: string;
   totalRuns: number;
   wickets: number;
-  overs: number; // e.g., 18.3
-  balls: number; // total balls bowled
-  batsmen: BatsmanStats[];
-  bowlers: BowlerStats[];
+  overs: number;
+  balls: number;
+  batsmen: Batsman[];
+  bowlers: Bowler[];
   extras: {
-    wides: number;
-    noBalls: number;
+    total: number;
     byes: number;
     legByes: number;
-    total: number;
+    wides: number;
+    noBalls: number;
   };
-  fallOfWickets: {
-    wicketNo: number;
-    score: number;
-    over: number;
-    batsmanName: string;
-  }[];
-  overHistory: {
-    overNumber: number;
-    runsConceded: number;
-    wicketsLost: number;
-    balls: { run: number; isWicket: boolean; isFour: boolean; isSix: boolean; extra?: string }[];
-  }[];
+  fallOfWickets: FallOfWicket[];
+}
+
+export type BatsmanStats = Batsman;
+export type BowlerStats = Bowler;
+export type MatchStatus = 'LIVE' | 'UPCOMING' | 'COMPLETED';
+
+export interface BallEvent {
+  id: string;
+  ball: number;
+  over: number;
+  runs: number;
+  isFour: boolean;
+  isSix: boolean;
+  isWicket: boolean;
+  wicketType?: 'bowled' | 'caught' | 'lbw' | 'run out' | 'stumped' | string;
+  batsmanName: string;
+  bowlerName: string;
+  commentaryEn: string;
+  commentaryTa: string;
+  speedKmph?: number;
+  timestamp: string;
 }
 
 export interface CricketMatch {
   id: string;
   title: string;
-  titleTa: string;
-  tournament: TournamentType;
+  titleTa?: string;
+  tournament: string;
   matchNumber: string;
-  status: MatchStatus;
-  format: MatchFormat;
+  status: 'LIVE' | 'UPCOMING' | 'COMPLETED';
+  format: string;
   venue: string;
-  venueTa: string;
+  venueTa?: string;
   city: string;
-  cityTa: string;
-  pitchReport: string;
-  pitchReportTa: string;
-  weather: {
+  cityTa?: string;
+  pitchReport?: string;
+  pitchReportTa?: string;
+  weather?: {
     tempC: number;
     condition: string;
     conditionTa: string;
     rainChance: number;
+    humidity: number;
+    windKph: number;
   };
-  team1: TeamInfo;
-  team2: TeamInfo;
-  innings1: InningsData;
-  innings2?: InningsData;
-  currentInningsNumber: 1 | 2;
-  battingTeamId: string;
-  bowlingTeamId: string;
+  team1: Team;
+  team2: Team;
+  innings1: Innings;
+  innings2: Innings;
   target?: number;
-  ballsRemaining?: number;
-  runsNeeded?: number;
-  currentRunRate: number;
+  targetRuns?: number;
   requiredRunRate?: number;
-  winProbabilityTeam1: number; // e.g. 64%
-  winProbabilityTeam2: number; // e.g. 36%
+  currentRunRate?: number;
   recentBalls: BallEvent[];
-  tossResult: string;
-  tossResultTa: string;
-  statusText: string;
-  statusTextTa: string;
-  playerOfTheMatch?: {
-    name: string;
-    nameTa: string;
-    team: string;
-    stat: string;
-  };
-  matchDate?: string; // YYYY-MM-DD format for date filtering
-  matchDateFormatted?: string;
-  matchDateFormattedTa?: string;
-}
-
-export interface UpcomingMatch {
-  id: string;
-  tournament: TournamentType;
-  matchNo: string;
-  dateStr: string;
-  dateStrTa: string;
-  timeStr: string;
-  startsInSeconds: number;
-  venue: string;
-  venueTa: string;
-  city: string;
-  team1: TeamInfo;
-  team2: TeamInfo;
-  stage: string;
-  stageTa: string;
-  headToHead: {
-    team1Wins: number;
-    team2Wins: number;
-    noResult: number;
-    total: number;
-  };
-  keyBattle: {
-    player1: string;
-    player2: string;
-    description: string;
-    descriptionTa: string;
-  };
-  isReminderSet?: boolean;
+  isGoogleTrending?: boolean;
+  trendingReason?: string;
+  trendingReasonTa?: string;
+  tossResult?: string;
+  tossResultTa?: string;
+  statusText?: string;
+  statusTextTa?: string;
+  winProbabilityTeam1?: number;
+  winProbabilityTeam2?: number;
+  aiAnalysisEn?: string;
+  aiAnalysisTa?: string;
+  currentInningsNumber?: number;
 }
 
 export interface PointsTableTeam {
   position: number;
   teamId: string;
+  name: string;
+  nameTa?: string;
   teamName: string;
-  teamNameTa: string;
+  teamNameTa?: string;
   shortName: string;
+  logo: string;
+  color: string;
   played: number;
   won: number;
   lost: number;
@@ -189,33 +150,82 @@ export interface PointsTableTeam {
   noResult: number;
   netRunRate: number;
   points: number;
-  recentForm: ('W' | 'L' | 'NR')[];
-  color: string;
-  logo: string;
+  recentForm: ('W' | 'L' | 'T' | 'NR')[];
+}
+
+export interface BatterLeader {
+  rank: number;
+  name: string;
+  nameTa?: string;
+  player: string;
+  playerTa?: string;
+  team: string;
+  teamShort: string;
+  teamColor: string;
+  runs: number;
+  matches: number;
+  avg: number;
+  strikeRate: number;
+  highscore: string;
+  fours: number;
+  sixes: number;
+}
+
+export interface BowlerLeader {
+  rank: number;
+  name: string;
+  nameTa?: string;
+  player: string;
+  playerTa?: string;
+  team: string;
+  teamShort: string;
+  teamColor: string;
+  wickets: number;
+  matches: number;
+  economy: number;
+  avg: number;
+  bestBowling: string;
+  bestFigures: string;
 }
 
 export interface PlayerLeaderboard {
-  orangeCap: {
-    rank: number;
-    player: string;
-    playerTa: string;
-    team: string;
-    teamColor: string;
-    runs: number;
-    innings: number;
-    strikeRate: number;
-    fours: number;
-    sixes: number;
-  }[];
-  purpleCap: {
-    rank: number;
-    player: string;
-    playerTa: string;
-    team: string;
-    teamColor: string;
-    wickets: number;
-    overs: number;
-    economy: number;
-    bestFigures: string;
-  }[];
+  orangeCap: BatterLeader[];
+  purpleCap: BowlerLeader[];
+}
+
+export interface UpcomingMatch {
+  id: string;
+  tournament: string;
+  tournamentTa?: string;
+  matchNumber: string;
+  matchNumberTa?: string;
+  team1: Team;
+  team2: Team;
+  date: string;
+  dateTa?: string;
+  time: string;
+  timeTa: string;
+  venue: string;
+  venueTa: string;
+  format: string;
+  countdownHours: number;
+}
+
+export interface RecentResult {
+  id: string;
+  tournament: string;
+  tournamentTa?: string;
+  matchNumber: string;
+  matchNumberTa?: string;
+  team1: Team;
+  team2: Team;
+  score1: string;
+  score2: string;
+  winnerTeamId: string;
+  winMarginEn: string;
+  winMarginTa: string;
+  playerOfMatchEn: string;
+  playerOfMatchTa: string;
+  date: string;
+  dateTa: string;
 }

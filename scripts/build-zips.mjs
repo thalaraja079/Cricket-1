@@ -1,56 +1,31 @@
+import { execSync } from 'child_process';
 import fs from 'fs';
-import path from 'path';
-import JSZip from 'jszip';
 
-async function zipDirectory(sourceDir, zipFilePath, rootFolderName) {
-  const zip = new JSZip();
+console.log('Building WordPress packages with Python zipfile...');
+try {
+  execSync(`python3 -c "
+import zipfile, os
 
-  function addFolderToZip(folderPath, currentZipFolder) {
-    const items = fs.readdirSync(folderPath);
-    for (const item of items) {
-      const fullPath = path.join(folderPath, item);
-      const stat = fs.statSync(fullPath);
-      if (stat.isDirectory()) {
-        const subZip = currentZipFolder.folder(item);
-        addFolderToZip(fullPath, subZip);
-      } else {
-        const content = fs.readFileSync(fullPath);
-        currentZipFolder.file(item, content);
-      }
-    }
-  }
+def make_wp_zip(source_dir, out_zip, folder_name):
+    os.makedirs(os.path.dirname(out_zip), exist_ok=True)
+    with zipfile.ZipFile(out_zip, 'w', zipfile.ZIP_DEFLATED) as z:
+        for root, dirs, files in os.walk(source_dir):
+            for file in sorted(files):
+                full_path = os.path.join(root, file)
+                rel_path = os.path.relpath(full_path, source_dir)
+                archive_name = os.path.join(folder_name, rel_path) if folder_name else rel_path
+                z_info = zipfile.ZipInfo(archive_name)
+                z_info.external_attr = 0o644 << 16
+                with open(full_path, 'rb') as f:
+                    z.writestr(z_info, f.read())
 
-  const rootZip = rootFolderName ? zip.folder(rootFolderName) : zip;
-  addFolderToZip(sourceDir, rootZip);
-
-  const buffer = await zip.generateAsync({
-    type: 'nodebuffer',
-    compression: 'DEFLATE',
-    compressionOptions: { level: 9 },
-  });
-
-  const targetDir = path.dirname(zipFilePath);
-  if (!fs.existsSync(targetDir)) {
-    fs.mkdirSync(targetDir, { recursive: true });
-  }
-
-  fs.writeFileSync(zipFilePath, buffer);
-  console.log(`Created zip: ${zipFilePath} (${buffer.length} bytes)`);
-}
-
-async function main() {
-  console.log('Building WordPress packages...');
-  
-  // 1. Build Theme Zip
-  await zipDirectory('./cricpulse-theme', './public/cricpulse-theme.zip', 'cricpulse-theme');
-
-  // 2. Build Plugin Zip
-  await zipDirectory('./wordpress-plugin', './public/cricpulse-plugin.zip', 'cricpulse-live-score');
-
+make_wp_zip('cricpulse-theme', 'public/cricpulse-theme.zip', 'cricpulse-theme')
+make_wp_zip('cricpulse-theme', 'public/cricpulse-theme-flat.zip', '')
+make_wp_zip('cricpulse-theme', 'public/cricpulse-theme-direct.zip', '')
+make_wp_zip('wordpress-plugin', 'public/cricpulse-plugin.zip', 'cricpulse-live-score')
+print('Built standard WordPress zips!')
+"`);
   console.log('WordPress ZIP packages built successfully!');
+} catch (err) {
+  console.error('Python zip failed:', err);
 }
-
-main().catch(err => {
-  console.error(err);
-  process.exit(1);
-});

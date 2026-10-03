@@ -78,10 +78,10 @@ const ENGLISH_CRICKET_QUOTES = {
   ]
 };
 
-export function useLiveScoreEngine(lang: Language = 'ta') {
+export function useLiveScoreEngine(lang: Language = 'en') {
   const [matches, setMatches] = useState<CricketMatch[]>(initialLiveMatches);
   const [activeMatchId, setActiveMatchId] = useState<string>(initialLiveMatches[0].id);
-  const [isPlaying, setIsPlaying] = useState<boolean>(true);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [speedMs, setSpeedMs] = useState<number>(3500); // 3500ms standard, 1500ms fast
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [voiceEnabled, setVoiceEnabled] = useState<boolean>(false);
@@ -194,7 +194,7 @@ export function useLiveScoreEngine(lang: Language = 'ta') {
 
         // Voice readout if enabled
         if (isFour || isSix || isWicket) {
-          cricketAudio.speakCommentary(commentaryTa, 'ta');
+          cricketAudio.speakCommentary(lang === 'ta' ? commentaryTa : commentaryEn, lang);
         }
 
         // Banner trigger
@@ -230,9 +230,9 @@ export function useLiveScoreEngine(lang: Language = 'ta') {
 
           // Bring next batsman from squad if available
           const nextBatter: BatsmanStats = {
-            id: `csk-sub-${Date.now()}`,
-            name: 'Ravindra Jadeja',
-            nameTa: 'ரவீந்திர ஜடேஜா',
+            id: `sub-${Date.now()}`,
+            name: 'Tilak Varma',
+            nameTa: 'திலக் வர்மா',
             role: 'All-rounder',
             runs: 0,
             balls: 0,

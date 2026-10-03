@@ -1,5 +1,5 @@
 /**
- * CricPulse Official Standalone Cricket Center for WordPress
+ * CricPulse Official Standalone Cricket Center for WordPress Plugin
  * Real-Time Official Cricket Scores, Ball-by-Ball, and BigBallsData API Integration
  * 
  * - DEFAULT LANGUAGE: 100% ENGLISH BY DEFAULT (Tamil available via toggle button)
@@ -343,12 +343,11 @@
                     }
                     render();
                 } else {
-                    // Direct client fallback to BigBallsData if REST API had a 401
                     fetchDirectBigBallsData();
                 }
             })
             .catch(function(err) {
-                console.log('REST sync notice:', err);
+                console.log('Plugin REST notice:', err);
                 fetchDirectBigBallsData();
             });
     }
@@ -371,7 +370,7 @@
             }
         })
         .catch(function(e) {
-            console.log('BigBallsData direct notice:', e);
+            console.log('Plugin direct notice:', e);
         });
     }
 
@@ -829,7 +828,6 @@
     document.addEventListener('DOMContentLoaded', function () {
         render();
         fetchLiveApiData();
-        // Poll API every 45 seconds for real updates
         setInterval(fetchLiveApiData, 45000);
     });
 
