@@ -3,6 +3,7 @@ import { CricketMatch, BallEvent, BatsmanStats, MatchStatus, Language } from '..
 import { initialLiveMatches } from '../data/mockCricketData';
 import { cricketAudio } from './soundEffects';
 import { notificationService } from './notificationService';
+import { fetchRealLiveMatches } from './liveCricketApi';
 
 interface LiveEventBanner {
   id: string;
@@ -86,6 +87,7 @@ export function useLiveScoreEngine(lang: Language = 'en') {
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [voiceEnabled, setVoiceEnabled] = useState<boolean>(false);
   const [banner, setBanner] = useState<LiveEventBanner | null>(null);
+  const [realLiveMode, setRealLiveMode] = useState<boolean>(true);
 
   const activeMatch = matches.find(m => m.id === activeMatchId) || matches[0];
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -99,8 +101,23 @@ export function useLiveScoreEngine(lang: Language = 'en') {
     cricketAudio.setVoiceEnabled(voiceEnabled);
   }, [voiceEnabled]);
 
-  // Simulate next ball for active match
+  // Real API is authoritative. Never generate fake balls while live data mode is active.
+  useEffect(() => {
+    let cancelled = false;
+    const refresh = async () => {
+      const live = await fetchRealLiveMatches();
+      if (cancelled || live === null) return;
+      setRealLiveMode(true);
+      setMatches(live);
+      setActiveMatchId(current => live.some(m => m.id === current) ? current : (live[0]?.id || current));
+    };
+    refresh();
+    const timer = setInterval(refresh, 15000);
+    return () => { cancelled = true; clearInterval(timer); };
+  }, []);
+
   const advanceOneBall = useCallback(() => {
+    if (realLiveMode) return;
     setMatches(prevMatches => {
       return prevMatches.map(m => {
         if (m.id !== activeMatchId || m.status !== 'LIVE' || !m.innings2) {
@@ -359,11 +376,11 @@ export function useLiveScoreEngine(lang: Language = 'en') {
         };
       });
     });
-  }, [activeMatchId, lang]);
+  }, [activeMatchId, lang, realLiveMode]);
 
   // Real-time ticking interval with unthrottled Web Worker (prevents tab freezing when inactive)
   useEffect(() => {
-    if (!isPlaying || activeMatch.status !== 'LIVE') {
+    if (realLiveMode || !isPlaying || activeMatch.status !== 'LIVE') {
       return;
     }
 
@@ -411,7 +428,7 @@ export function useLiveScoreEngine(lang: Language = 'en') {
         clearInterval(fallbackInterval);
       }
     };
-  }, [isPlaying, speedMs, advanceOneBall, activeMatch.status]);
+  }, [realLiveMode, isPlaying, speedMs, advanceOneBall, activeMatch.status]);
 
   return {
     matches,
