@@ -223,6 +223,30 @@ app.get('/api/health', (req, res) => {
 });
 
 // 2. Real-time Google Search Trending Cricket Match Endpoint
+// 3. Big Balls Data live cricket feed (server-side key; never exposed to the browser)
+app.get('/api/cricket/live', async (_req, res) => {
+  const apiKey = (process.env.BBS_API_KEY || '').trim();
+  if (!apiKey) return res.status(503).json({ success: false, error: 'BBS_API_KEY is not configured on the server.' });
+  try {
+    const response = await fetch('https://api.bigballsdata.com/v1/cricket/matches', { headers: { 'x-api-key': apiKey, 'Accept': 'application/json' } });
+    const payload = await response.json();
+    if (!response.ok) return res.status(response.status).json({ success: false, error: payload?.error?.message || payload?.message || 'Big Balls Data request failed.' });
+    const rows = Array.isArray(payload?.data) ? payload.data : Array.isArray(payload) ? payload : [];
+    const liveRows = rows.filter((m: any) => String(m?.status || '').toUpperCase().includes('LIVE'));
+    const matches = await Promise.all(liveRows.map(async (m: any) => {
+      const id = m?.id; if (!id) return null;
+      try {
+        const stateRes = await fetch('https://api.bigballsdata.com/v1/cricket/matches/' + encodeURIComponent(id) + '/state', { headers: { 'x-api-key': apiKey, 'Accept': 'application/json' } });
+        const statePayload = stateRes.ok ? await stateRes.json() : null;
+        return { match: m, state: statePayload?.data ?? statePayload ?? null };
+      } catch { return { match: m, state: null }; }
+    }));
+    return res.json({ success: true, provider: 'bigballsdata', updatedAt: new Date().toISOString(), matches: matches.filter(Boolean) });
+  } catch (error: any) {
+    console.error('Big Balls live cricket feed failed:', error);
+    return res.status(502).json({ success: false, error: error?.message || 'Unable to reach Big Balls Data.' });
+  }
+});
 app.get('/api/cricket/trending-live', async (req, res) => {
   const forceRefresh = req.query.refresh === 'true';
   const customKey = (req.headers['x-gemini-api-key'] || req.headers['x-api-key'] || req.query.apiKey) as string | undefined;
